@@ -70,7 +70,7 @@ if LinuxProcessMemory.supported?
   Thread.new do
     loop do
       memory = LinuxProcessMemory.new
-      logger.info("Process memory (pid: Process.pid): rss: #{memory.rss(:mb).round} MB")
+      logger.info("Process memory (pid: Process.pid): resident: #{memory.rss(:mb).round} MB")
       sleep(60)
     end
   end
