@@ -124,4 +124,14 @@ describe LinuxProcessMemory do
       expect(memory.referenced(:Gb)).to eq(1100 / 1024.0**2)
     end
   end
+
+  if LinuxProcessMemory.supported?
+    describe "actually do it" do
+      memory = LinuxProcessMemory.new
+      expect(memory.total).to be > 0
+      expect(memory.rss).to be > 0
+      expect(memory.uss).to be > 0
+      expect(memory.pss).to be > 0
+    end
+  end
 end
