@@ -37,13 +37,13 @@ memory.unique # same as uss
 memory.referenced # => memory actively referenced by the process (i.e. non-freeable memory)
 ```
 
-These measurements tend to be the mose useful since swap is cheap and shared memory can be used by many other processes:
+These measurements tend to be the mose useful ones especially if your processes are using shared memory:
 
 - [Resident Set Size](https://en.wikipedia.org/wiki/Resident_set_size)
 - [Proportional Set Size](https://en.wikipedia.org/wiki/Proportional_set_size)
 - [Unique Set Size](https://en.wikipedia.org/wiki/Unique_set_size)
 
-Values are returned in bytes, but you can request different units by passing in an optional unit argument. Note that requesting a unit other than bytes will return a `Float` instead of an `Integer`.
+Values are returned in bytes, but you can request different units by passing in an optional argument to indicate the unit. Note that requesting a unit other than bytes will return a `Float` instead of an `Integer`.
 
 ```ruby
 memory = LinuxProcessMemory.new
