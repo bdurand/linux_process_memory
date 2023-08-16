@@ -21,9 +21,7 @@ memory = LinuxProcessMemory.new
 
 The memory breakdown is captured at the time the object is created. To get the memory breakdown at a different time, create a new object.
 
-Memory is complicated in Linux and there are many different ways to measure it depending on how you want to count shared memeory and swap.
-
-This gem tries to provide a few different ways to measure memory usage. The following methods are available:
+Memory is complicated in Linux and there are many different ways to measure it depending on how you want to count shared memory and swap. This gem provides a few different ways to measure memory usage. The following methods are available:
 
 ```ruby
 memory = LinuxProcessMemory.new

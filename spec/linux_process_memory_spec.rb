@@ -127,11 +127,13 @@ describe LinuxProcessMemory do
 
   if LinuxProcessMemory.supported?
     describe "actually do it" do
-      memory = LinuxProcessMemory.new
-      expect(memory.total).to be > 0
-      expect(memory.rss).to be > 0
-      expect(memory.uss).to be > 0
-      expect(memory.pss).to be > 0
+      it "reads the memory from the /proc file" do
+        memory = LinuxProcessMemory.new
+        expect(memory.total).to be > 0
+        expect(memory.rss).to be > 0
+        expect(memory.uss).to be > 0
+        expect(memory.pss).to be > 0
+      end
     end
   end
 end
