@@ -3,7 +3,9 @@
 [![Continuous Integration](https://github.com/bdurand/linux_process_memory/actions/workflows/continuous_integration.yml/badge.svg)](https://github.com/bdurand/linux_process_memory/actions/workflows/continuous_integration.yml)
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/testdouble/standard)
 
-Ruby gem to get a breakdown of the memory being used by a Linux process. It is specific to Linux and will not work on other operating systems even if they are Linux-like (i.e. MacOS, Windows, FreeBSD, etc.).
+Ruby gem to get a breakdown of the memory being used by a Linux process. It is specific to Linux and will not work on other operating systems even if they are Linux-like (i.e. MacOS, Windows, FreeBSD, etc.). The breakdown takes into account shared memory and swap memory. It is most useful for monitoring memory usage of processes that use shared memory.
+
+If you need similar functionality like this on other platforms, you can use the [get_process_mem gem](https://github.com/zombocom/get_process_mem).
 
 ## Usage
 
