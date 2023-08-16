@@ -34,7 +34,7 @@ memory.pss # => proportional set size (resident size + shared memory / number of
 memory.proportional # same as pss
 memory.uss # => unique set size (resident memory not shared with other processes)
 memory.unique # same as uss
-memory.referenced # => memory actively referenced by the process
+memory.referenced # => memory actively referenced by the process (i.e. non-freeable memory)
 ```
 
 These measurements tend to be the mose useful since swap is cheap and shared memory can be used by many other processes:
@@ -43,7 +43,7 @@ These measurements tend to be the mose useful since swap is cheap and shared mem
 - [Proportional Set Size](https://en.wikipedia.org/wiki/Proportional_set_size)
 - [Unique Set Size](https://en.wikipedia.org/wiki/Unique_set_size)
 
-Values are returned in bytes, but you can request different units.
+Values are returned in bytes, but you can request different units by passing in an optional unit argument. Note that requesting a unit other than bytes will return a `Float` instead of an `Integer`.
 
 ```ruby
 memory = LinuxProcessMemory.new
@@ -52,7 +52,7 @@ memory.total(:mb) # => total memory used by the process in megabytes
 memory.total(:gb) # => total memory used by the process in gigabytes
 ```
 
-This gem is specific to Linux and will raise an error if you try to use it on another platform. If you want to avoid raising an error, you can check the platform first.
+This gem is specific to Linux and will raise an error if you try to use it on a non-Linux platform. If you want to avoid raising an error, you can check the platform first.
 
 ```ruby
 if LinuxProcessMemory.supported?
@@ -62,7 +62,7 @@ end
 
 ### Example
 
-Here's an example of how you might use this gem to collect memory information on your processes by logging resident memory every minute.
+Here's an example of how you might use this gem to collect memory information on your processes by logging resident and proportional memory every minute.
 
 ```ruby
 if LinuxProcessMemory.supported?
@@ -70,7 +70,7 @@ if LinuxProcessMemory.supported?
   Thread.new do
     loop do
       memory = LinuxProcessMemory.new
-      logger.info("Process memory: resident: #{memory.rss(:mb).round} MB, pid: #{Process.pid}")
+      logger.info("Process memory (pid: Process.pid): rss: #{memory.rss(:mb).round} MB, pss: #{memory.pss(:mb).round}")
       sleep(60)
     end
   end
