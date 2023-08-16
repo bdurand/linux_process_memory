@@ -131,14 +131,14 @@ class LinuxProcessMemory
     stats = Hash.new(0)
     return stats unless File.exist?(smap_rollup_file)
 
-    File.readlines(smap_rollup_file).each do |line|
-      line.chomp!
-      next unless line.end_with?("kB")
-
-      key, value, _units = line.split
+    data = File.read(smap_rollup_file).split("\n")
+    data.shift # remove header
+    data.each do |line|
+      key, value, unit = line.split
       key = key.chomp(":").to_sym
 
-      stats[key] += (value.to_f * 1024).round
+      multiplier = UNIT_CONVERSION.fetch(unit.to_s.downcase, 1)
+      stats[key] += (value.to_f * multiplier).round
     end
 
     stats

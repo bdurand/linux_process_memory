@@ -34,6 +34,7 @@ memory.pss # => proportional set size (resident size + shared memory / number of
 memory.proportional # same as pss
 memory.uss # => unique set size (resident memory not shared with other processes)
 memory.unique # same as uss
+memory.referenced # => memory actively referenced by the process
 ```
 
 These measurements tend to be the mose useful since swap is cheap and shared memory can be used by many other processes:

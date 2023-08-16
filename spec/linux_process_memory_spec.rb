@@ -3,7 +3,7 @@
 require_relative "spec_helper"
 
 describe LinuxProcessMemory do
-  let(:smaps_rollup) { File.readlines(File.expand_path("fixtures/smaps_rollup.txt", __dir__)) }
+  let(:smaps_rollup) { File.read(File.expand_path("fixtures/smaps_rollup.txt", __dir__)) }
 
   describe "detecting Linux" do
     it "detects Linux from the Ruby platform" do
@@ -32,13 +32,13 @@ describe LinuxProcessMemory do
     it "gets the memory usage of a process by pid" do
       pid = rand(10000)
       expect(File).to receive(:exist?).with("/proc/#{pid}/smaps_rollup").and_return(true)
-      expect(File).to receive(:readlines).with("/proc/#{pid}/smaps_rollup").and_return(smaps_rollup)
+      expect(File).to receive(:read).with("/proc/#{pid}/smaps_rollup").and_return(smaps_rollup)
       memory = LinuxProcessMemory.new(pid)
     end
 
     it "get the memory usage of the current process by default" do
       expect(File).to receive(:exist?).with("/proc/#{Process.pid}/smaps_rollup").and_return(true)
-      expect(File).to receive(:readlines).with("/proc/#{Process.pid}/smaps_rollup").and_return(smaps_rollup)
+      expect(File).to receive(:read).with("/proc/#{Process.pid}/smaps_rollup").and_return(smaps_rollup)
       memory = LinuxProcessMemory.new
     end
 
@@ -58,7 +58,7 @@ describe LinuxProcessMemory do
     before do
       allow(LinuxProcessMemory).to receive(:supported?).and_return(true)
       allow(File).to receive(:exist?).with("/proc/#{Process.pid}/smaps_rollup").and_return(true)
-      allow(File).to receive(:readlines).with("/proc/#{Process.pid}/smaps_rollup").and_return(smaps_rollup)
+      allow(File).to receive(:read).with("/proc/#{Process.pid}/smaps_rollup").and_return(smaps_rollup)
     end
 
     let(:memory) { LinuxProcessMemory.new }
