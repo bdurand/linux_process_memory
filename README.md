@@ -62,7 +62,7 @@ end
 
 ### Example
 
-Here's an example of how you might use this gem to collect memory information on your processes by logging resident and proportional memory every minute.
+Here's an example of how you might use this gem to collect memory information on your processes by logging resident memory every minute.
 
 ```ruby
 if LinuxProcessMemory.supported?
@@ -70,7 +70,7 @@ if LinuxProcessMemory.supported?
   Thread.new do
     loop do
       memory = LinuxProcessMemory.new
-      logger.info("Process memory (pid: Process.pid): rss: #{memory.rss(:mb).round} MB, pss: #{memory.pss(:mb).round}")
+      logger.info("Process memory (pid: Process.pid): rss: #{memory.rss(:mb).round} MB")
       sleep(60)
     end
   end
