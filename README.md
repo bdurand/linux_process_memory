@@ -3,11 +3,80 @@
 [![Continuous Integration](https://github.com/bdurand/linux_process_memory/actions/workflows/continuous_integration.yml/badge.svg)](https://github.com/bdurand/linux_process_memory/actions/workflows/continuous_integration.yml)
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/testdouble/standard)
 
-TODO
+Ruby gem to get a breakdown of the memory being used by a Linux process. It is specific to Linux and will not work on other operating systems even if they are Linux-like (i.e. MacOS, Windows, FreeBSD, etc.).
 
 ## Usage
 
-TODO
+Pass in a process pid to get a breakdown of the memory being used by that process.
+
+```ruby
+memory = LinuxProcessMemory.new(1234)
+```
+
+If you don't pass in a pid, it will get the memory for the current process.
+
+```ruby
+memory = LinuxProcessMemory.new
+```
+
+The memory breakdown is captured at the time the object is created. To get the memory breakdown at a different time, create a new object.
+
+Memory is complicated in Linux and there are many different ways to measure it depending on how you want to count shared memeory and swap.
+
+This gem tries to provide a few different ways to measure memory usage. The following methods are available:
+
+```ruby
+memory = LinuxProcessMemory.new
+memory.total # => total memory used by the process (resident + swap)
+memory.swap # => swap memory used
+memory.shared # => shared memory used
+memory.rss # => resident set size (i.e. non-swap memory allocated)
+memory.resident # same as rss
+memory.pss # => proportional set size (resident size + shared memory / number of processes)
+memory.proportional # same as pss
+memory.uss # => unique set size (resident memory not shared with other processes)
+memory.unique # same as uss
+```
+
+These measurements tend to be the mose useful since swap is cheap and shared memory can be used by many other processes:
+
+- [Resident Set Size](https://en.wikipedia.org/wiki/Resident_set_size)
+- [Proportional Set Size](https://en.wikipedia.org/wiki/Proportional_set_size)
+- [Unique Set Size](https://en.wikipedia.org/wiki/Unique_set_size)
+
+Values are returned in bytes, but you can request different units.
+
+```ruby
+memory = LinuxProcessMemory.new
+memory.total(:kb) # => total memory used by the process in kilobytes
+memory.total(:mb) # => total memory used by the process in megabytes
+memory.total(:gb) # => total memory used by the process in gigabytes
+```
+
+This gem is specific to Linux and will raise an error if you try to use it on another platform. If you want to avoid raising an error, you can check the platform first.
+
+```ruby
+if LinuxProcessMemory.supported?
+  memory = LinuxProcessMemory.new
+end
+```
+
+### Example
+
+Here's an example of how you might use this gem to collect memory information on your processes by logging resident memory every minute.
+
+```ruby
+if LinuxProcessMemory.supported?
+  logger = Logger.new($stderr)
+  Thread.new do
+    loop do
+      memory = LinuxProcessMemory.new
+      logger.info("Process memory: resident: #{memory.rss(:mb).round} MB, pid: #{Process.pid}")
+      sleep(60)
+    end
+  end
+end
+```
 
 ## Installation
 

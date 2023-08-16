@@ -8,25 +8,25 @@ describe LinuxProcessMemory do
   describe "detecting Linux" do
     it "detects Linux from the Ruby platform" do
       stub_const("RUBY_PLATFORM", "x86_64-linux")
-      expect(LinuxProcessMemory.linux?).to be true
+      expect(LinuxProcessMemory.supported?).to be true
     end
 
     it "detects if not on a Linux platform" do
       stub_const("RUBY_PLATFORM", "x86_64-darwin")
-      expect(LinuxProcessMemory.linux?).to be false
+      expect(LinuxProcessMemory.supported?).to be false
     end
   end
 
   describe "when not using Linux" do
     it "raises an error if not using Linux" do
-      expect(LinuxProcessMemory).to receive(:linux?).and_return(false)
+      expect(LinuxProcessMemory).to receive(:supported?).and_return(false)
       expect { LinuxProcessMemory.new }.to raise_error(LinuxProcessMemory::NotSupportedError)
     end
   end
 
   describe "getting the memory usage of a process" do
     before do
-      allow(LinuxProcessMemory).to receive(:linux?).and_return(true)
+      allow(LinuxProcessMemory).to receive(:supported?).and_return(true)
     end
 
     it "gets the memory usage of a process by pid" do
@@ -56,7 +56,7 @@ describe LinuxProcessMemory do
 
   describe "memory breakdown" do
     before do
-      allow(LinuxProcessMemory).to receive(:linux?).and_return(true)
+      allow(LinuxProcessMemory).to receive(:supported?).and_return(true)
       allow(File).to receive(:exist?).with("/proc/#{Process.pid}/smaps_rollup").and_return(true)
       allow(File).to receive(:readlines).with("/proc/#{Process.pid}/smaps_rollup").and_return(smaps_rollup)
     end
