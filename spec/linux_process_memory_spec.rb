@@ -18,9 +18,10 @@ describe LinuxProcessMemory do
   end
 
   describe "when not using Linux" do
-    it "raises an error if not using Linux" do
+    it "returns memory size as -1" do
       expect(LinuxProcessMemory).to receive(:supported?).and_return(false)
-      expect { LinuxProcessMemory.new }.to raise_error(LinuxProcessMemory::NotSupportedError)
+      memory = LinuxProcessMemory.new
+      expect(memory.total).to eq(-1)
     end
   end
 
@@ -34,12 +35,14 @@ describe LinuxProcessMemory do
       expect(File).to receive(:exist?).with("/proc/#{pid}/smaps_rollup").and_return(true)
       expect(File).to receive(:read).with("/proc/#{pid}/smaps_rollup").and_return(smaps_rollup)
       memory = LinuxProcessMemory.new(pid)
+      expect(memory.pid).to eq pid
     end
 
     it "get the memory usage of the current process by default" do
       expect(File).to receive(:exist?).with("/proc/#{Process.pid}/smaps_rollup").and_return(true)
       expect(File).to receive(:read).with("/proc/#{Process.pid}/smaps_rollup").and_return(smaps_rollup)
       memory = LinuxProcessMemory.new
+      expect(memory.pid).to eq Process.pid
     end
 
     it "returns all zeroes if the process does not exist" do

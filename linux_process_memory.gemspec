@@ -4,7 +4,7 @@ Gem::Specification.new do |spec|
   spec.authors = ["Brian Durand"]
   spec.email = ["bbdurand@gmail.com"]
 
-  spec.summary = "Gem that can get a breakdown of the memory being used by a Linux process."
+  spec.summary = "Get a breakdown of the memory being used by a Linux process including resident, shared, private, and swap memory."
 
   spec.homepage = "https://github.com/bdurand/linux_process_memory"
   spec.license = "MIT"

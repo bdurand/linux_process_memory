@@ -3,13 +3,6 @@
 # This class will read the smap files for a process on a Linux system and report
 # the memory usage for that process.
 class LinuxProcessMemory
-  # This error is raised when you try to use LinuxProcessMemory on a non-Linux system.
-  class NotSupportedError < StandardError
-    def initialize
-      super("LinuxProcessMemory is only supported on Linux systems")
-    end
-  end
-
   LINUX_MATCHER = /linux/i
   private_constant :LINUX_MATCHER
 
@@ -42,10 +35,8 @@ class LinuxProcessMemory
   #
   # @param pid [Integer] The process ID to snapshot. Defaults to the current process.
   def initialize(pid = Process.pid)
-    raise NotSupportedError unless self.class.supported?
-
     @pid = pid
-    @stats = read_smaps
+    @stats = (self.class.supported? ? read_smaps : Hash.new(-1))
   end
 
   # Returns the total memory usage for the process.
@@ -138,13 +129,16 @@ class LinuxProcessMemory
       key = key.chomp(":").to_sym
 
       multiplier = UNIT_CONVERSION.fetch(unit.to_s.downcase, 1)
-      stats[key] += (value.to_f * multiplier).round
+      numeric_value = (value.to_f * multiplier).round
+      stats[key] += numeric_value if numeric_value > 0
     end
 
     stats
   end
 
   def convert_units(value, units)
+    return -1 if value < 0
+
     divisor = UNIT_CONVERSION[units.to_s.downcase]
     raise ArgumentError.new("Unknown units: #{units}") unless divisor
 

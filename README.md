@@ -54,7 +54,7 @@ memory.total(:mb) # => total memory used by the process in megabytes
 memory.total(:gb) # => total memory used by the process in gigabytes
 ```
 
-This gem is specific to Linux and will raise an error if you try to use it on a non-Linux platform. If you want to avoid raising an error, you can check the platform first.
+This gem is specific to Linux. If you try to use it on a non-Linux platform then memory values will always be returned as -1. If you want to check if the gem is supported on your platform, you can use the `supported?` method.
 
 ```ruby
 if LinuxProcessMemory.supported?
@@ -72,7 +72,7 @@ if LinuxProcessMemory.supported?
   Thread.new do
     loop do
       memory = LinuxProcessMemory.new
-      logger.info("Process memory (pid: Process.pid): resident: #{memory.rss(:mb).round} MB")
+      logger.info("Proportional memory: #{memory.pss(:mb).round} MB (pid: #{Process.pid})")
       sleep(60)
     end
   end
