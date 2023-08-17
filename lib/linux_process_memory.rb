@@ -3,6 +3,8 @@
 # This class will read the smap files for a process on a Linux system and report
 # the memory usage for that process.
 class LinuxProcessMemory
+  VERSION = File.read(File.expand_path("../VERSION", __dir__)).strip.freeze
+
   LINUX_MATCHER = /linux/i
   private_constant :LINUX_MATCHER
 

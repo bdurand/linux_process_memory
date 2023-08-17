@@ -5,6 +5,12 @@ require_relative "spec_helper"
 describe LinuxProcessMemory do
   let(:smaps_rollup) { File.read(File.expand_path("fixtures/smaps_rollup.txt", __dir__)) }
 
+  describe "VERSION" do
+    it "has a version number" do
+      expect(LinuxProcessMemory::VERSION).to match(/\A\d+\.\d+\.\d+(rc\d+)?\z/)
+    end
+  end
+
   describe "detecting Linux" do
     it "detects Linux from the Ruby platform" do
       stub_const("RUBY_PLATFORM", "x86_64-linux")
