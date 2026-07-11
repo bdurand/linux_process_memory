@@ -29,6 +29,12 @@ describe LinuxProcessMemory do
       memory = LinuxProcessMemory.new
       expect(memory.total).to eq(-1)
     end
+
+    it "still raises an error for unknown units" do
+      expect(LinuxProcessMemory).to receive(:supported?).and_return(false)
+      memory = LinuxProcessMemory.new
+      expect { memory.total(:bogus) }.to raise_error(ArgumentError)
+    end
   end
 
   describe "getting the memory usage of a process" do
@@ -49,6 +55,27 @@ describe LinuxProcessMemory do
       expect(File).to receive(:read).with("/proc/#{Process.pid}/smaps_rollup").and_return(smaps_rollup)
       memory = LinuxProcessMemory.new
       expect(memory.pid).to eq Process.pid
+    end
+
+    it "returns all zeroes if the process exits after the file existence check" do
+      expect(File).to receive(:exist?).with("/proc/#{Process.pid}/smaps_rollup").and_return(true)
+      expect(File).to receive(:read).with("/proc/#{Process.pid}/smaps_rollup").and_raise(Errno::ENOENT)
+      memory = LinuxProcessMemory.new
+      expect(memory.total).to eq(0)
+    end
+
+    it "returns all zeroes if the process is not readable by the current user" do
+      expect(File).to receive(:exist?).with("/proc/#{Process.pid}/smaps_rollup").and_return(true)
+      expect(File).to receive(:read).with("/proc/#{Process.pid}/smaps_rollup").and_raise(Errno::EACCES)
+      memory = LinuxProcessMemory.new
+      expect(memory.total).to eq(0)
+    end
+
+    it "ignores blank lines in the smaps data" do
+      expect(File).to receive(:exist?).with("/proc/#{Process.pid}/smaps_rollup").and_return(true)
+      expect(File).to receive(:read).with("/proc/#{Process.pid}/smaps_rollup").and_return(smaps_rollup.sub("Pss:", "\n \nPss:"))
+      memory = LinuxProcessMemory.new
+      expect(memory.rss).to eq(1200 * 1024)
     end
 
     it "returns all zeroes if the process does not exist" do

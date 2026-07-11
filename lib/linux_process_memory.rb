@@ -46,7 +46,7 @@ class LinuxProcessMemory
   # @param units [Symbol] The units to return the memory usage in.
   #   Valid values are :bytes, :kilobytes, :megabytes, :gigabytes, :kb, :mb, :gb, :k, :m, :g.
   #   Defaults to :bytes.
-  # @return [Numberic]
+  # @return [Numeric]
   def total(units = :bytes)
     convert_units(@stats[:Rss] + @stats[:Swap], units)
   end
@@ -56,7 +56,7 @@ class LinuxProcessMemory
   # @param units [Symbol] The units to return the memory usage in.
   #   Valid values are :bytes, :kilobytes, :megabytes, :gigabytes, :kb, :mb, :gb, :k, :m, :g.
   #   Defaults to :bytes.
-  # @return [Numberic]
+  # @return [Numeric]
   def rss(units = :bytes)
     convert_units(@stats[:Rss], units)
   end
@@ -68,7 +68,7 @@ class LinuxProcessMemory
   # @param units [Symbol] The units to return the memory usage in.
   #   Valid values are :bytes, :kilobytes, :megabytes, :gigabytes, :kb, :mb, :gb, :k, :m, :g.
   #   Defaults to :bytes.
-  # @return [Numberic]
+  # @return [Numeric]
   def pss(units = :bytes)
     convert_units(@stats[:Pss], units)
   end
@@ -80,7 +80,7 @@ class LinuxProcessMemory
   # @param units [Symbol] The units to return the memory usage in.
   #   Valid values are :bytes, :kilobytes, :megabytes, :gigabytes, :kb, :mb, :gb, :k, :m, :g.
   #   Defaults to :bytes.
-  # @return [Numberic]
+  # @return [Numeric]
   def uss(units = :bytes)
     convert_units(@stats[:Private_Clean] + @stats[:Private_Dirty], units)
   end
@@ -92,7 +92,7 @@ class LinuxProcessMemory
   # @param units [Symbol] The units to return the memory usage in.
   #   Valid values are :bytes, :kilobytes, :megabytes, :gigabytes, :kb, :mb, :gb, :k, :m, :g.
   #   Defaults to :bytes.
-  # @return [Numberic]
+  # @return [Numeric]
   def swap(units = :bytes)
     convert_units(@stats[:Swap], units)
   end
@@ -102,7 +102,7 @@ class LinuxProcessMemory
   # @param units [Symbol] The units to return the memory usage in.
   #   Valid values are :bytes, :kilobytes, :megabytes, :gigabytes, :kb, :mb, :gb, :k, :m, :g.
   #   Defaults to :bytes.
-  # @return [Numberic]
+  # @return [Numeric]
   def shared(units = :bytes)
     convert_units(@stats[:Shared_Clean] + @stats[:Shared_Dirty], units)
   end
@@ -113,7 +113,7 @@ class LinuxProcessMemory
   # @param units [Symbol] The units to return the memory usage in.
   #   Valid values are :bytes, :kilobytes, :megabytes, :gigabytes, :kb, :mb, :gb, :k, :m, :g.
   #   Defaults to :bytes.
-  # @return [Numberic]
+  # @return [Numeric]
   def referenced(units = :bytes)
     convert_units(@stats[:Referenced], units)
   end
@@ -124,10 +124,19 @@ class LinuxProcessMemory
     stats = Hash.new(0)
     return stats unless File.exist?(smap_rollup_file)
 
-    data = File.read(smap_rollup_file).split("\n")
+    begin
+      contents = File.read(smap_rollup_file)
+    rescue Errno::ENOENT, Errno::EACCES, Errno::ESRCH
+      # The process exited or is not readable by the current user.
+      return stats
+    end
+
+    data = contents.split("\n")
     data.shift # remove header
     data.each do |line|
       key, value, unit = line.split
+      next if key.nil?
+
       key = key.chomp(":").to_sym
 
       multiplier = UNIT_CONVERSION.fetch(unit.to_s.downcase, 1)
@@ -139,11 +148,10 @@ class LinuxProcessMemory
   end
 
   def convert_units(value, units)
-    return -1 if value < 0
-
     divisor = UNIT_CONVERSION[units.to_s.downcase]
     raise ArgumentError.new("Unknown units: #{units}") unless divisor
 
+    return -1 if value < 0
     return value if divisor == 1
 
     value.to_f / divisor
