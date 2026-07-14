@@ -1,7 +1,6 @@
 # Linux Process Memory Ruby Gem
 
 [![Continuous Integration](https://github.com/bdurand/linux_process_memory/actions/workflows/continuous_integration.yml/badge.svg)](https://github.com/bdurand/linux_process_memory/actions/workflows/continuous_integration.yml)
-[![Regression Test](https://github.com/bdurand/linux_process_memory/actions/workflows/regression_test.yml/badge.svg)](https://github.com/bdurand/linux_process_memory/actions/workflows/regression_test.yml)
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/testdouble/standard)
 [![Gem Version](https://badge.fury.io/rb/linux_process_memory.svg)](https://badge.fury.io/rb/linux_process_memory)
 

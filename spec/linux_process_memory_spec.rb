@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative "spec_helper"
+require "spec_helper"
 
-describe LinuxProcessMemory do
+RSpec.describe LinuxProcessMemory do
   let(:smaps_rollup) { File.read(File.expand_path("fixtures/smaps_rollup.txt", __dir__)) }
 
   describe "VERSION" do
