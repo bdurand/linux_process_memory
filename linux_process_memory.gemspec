@@ -5,9 +5,14 @@ Gem::Specification.new do |spec|
   spec.email = ["bbdurand@gmail.com"]
 
   spec.summary = "Get a breakdown of the memory being used by a Linux process including resident, shared, private, and swap memory."
-
   spec.homepage = "https://github.com/bdurand/linux_process_memory"
   spec.license = "MIT"
+
+  spec.metadata = {
+    "homepage_uri" => spec.homepage,
+    "source_code_uri" => spec.homepage,
+    "changelog_uri" => "#{spec.homepage}/blob/main/CHANGELOG.md"
+  }
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.

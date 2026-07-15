@@ -17,5 +17,9 @@ Bundler.require(:default, :test)
 require_relative "../lib/linux_process_memory"
 
 RSpec.configure do |config|
+  config.warnings = true
+  config.disable_monkey_patching!
+  config.default_formatter = "doc" if config.files_to_run.one?
   config.order = :random
+  Kernel.srand config.seed
 end
